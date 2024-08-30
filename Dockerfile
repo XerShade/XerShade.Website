@@ -1,17 +1,19 @@
-# Create an intermediate image using .NET Core SDK
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
-LABEL stage=build-env
-WORKDIR /app
+#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS publish
+LABEL stage=publish
+ARG BUILD_CONFIGURATION=Release
+WORKDIR /src
 
-# Copy and build in the intermediate image
-COPY ./source /app
-RUN dotnet publish /app/XerShade.Website -c Release -o ./build/release
+COPY ["source/XerShade.Website/XerShade.Website.csproj", "source/XerShade.Website/"]
+RUN dotnet restore "./source/XerShade.Website/./XerShade.Website.csproj"
 
-# Build runtime image
+COPY . .
+WORKDIR "/src/source/XerShade.Website"
+RUN dotnet publish "./XerShade.Website.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+USER root
 WORKDIR /app
 EXPOSE 80
-USER root
-ENV ASPNETCORE_URLS http://+:80
-COPY --from=build-env /app/build/release .
+COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "XerShade.Website.dll"]
