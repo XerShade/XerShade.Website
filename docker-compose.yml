@@ -2,9 +2,11 @@ version: '3.4'
 
 services:
    xershade.ca.website:
-     build: 
+     build:
        context: .
        dockerfile: Dockerfile
+     volumes:
+        - "app_data:/app/App_Data"
      expose:
         - 80
      restart: unless-stopped
@@ -13,9 +15,10 @@ services:
         LETSENCRYPT_HOST: website.xershade.ca
         LETSENCRYPT_EMAIL: xershade.ca@gmail.com
         ASPNETCORE_HTTP_PORTS: 80
-     env_file:
-        - .env
      container_name: xershade.ca.website
+
+volumes:
+  app_data:
 
 networks:
   default:
