@@ -11,11 +11,8 @@ services:
         - 80
      restart: unless-stopped
      environment:
-        VIRTUAL_HOST: website.xershade.ca
-        LETSENCRYPT_HOST: website.xershade.ca
-        LETSENCRYPT_EMAIL: xershade.ca@gmail.com
         ASPNETCORE_HTTP_PORTS: 80
-     container_name: xershade.ca.website
+     container_name: xershade.ca.orchardcore
 
 volumes:
   app_data:
